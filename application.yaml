@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress-nginx
+  namespace: infra-tools       # де встановлено ArgoCD
+spec:
+  project: default
+
+  source:
+    repoURL: https://kubernetes.github.io/ingress-nginx   # Helm repo
+    chart: ingress-nginx                                   # чарт
+    targetRevision: 4.14.0                                 # версія чарта
+    helm:
+      valueFiles:
+        - values/ingress-nginx-values.yaml                 # твій файл у репо
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: application                                 # куди ставимо застосунок
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
